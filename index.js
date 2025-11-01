@@ -8,7 +8,7 @@ const {
 } = require('@whiskeysockets/baileys');
 const axios = require('axios');
 const AdmZip = require("adm-zip");
-const fs = require('fs');
+const fs = require("fs");
 const P = require("pino");
 const path = require("path");
 const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
@@ -16,6 +16,10 @@ const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
 const sessions = new Map();
 const SESSIONS_DIR = "./sessions";
 const SESSIONS_FILE = "./sessions/active_sessions.json";
+
+if (!fs.existsSync(SESSIONS_DIR)) {
+    fs.mkdirSync(SESSIONS_DIR, { recursive: true });
+}
 
 function createSessionDir(botNumber) {
     const deviceDir = path.join(SESSIONS_DIR, `device${botNumber}`);
@@ -671,120 +675,6 @@ bot.onText(/\/addsession/, async (msg) => {
         return;
     }
 
-    if (!msg.reply_to_message || !msg.reply_to_message.document) {
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          ᴇʀʀᴏʀ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: ʀᴇᴘʟʏ ꜰɪʟᴇ sᴇsɪᴏɴ
-❯ ᴘᴇʀɪɴᴛᴀʜ: /addsession
-❯ Time: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                parse_mode: "Markdown"
-            }
-        );
-        return;
-    }
-
-    const fileId = msg.reply_to_message.document.file_id;
-    const fileName = msg.reply_to_message.document.file_name;
-
-    if (!fileName.endsWith('.zip')) {
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          ᴇʀʀᴏʀ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: ꜰɪʟᴇ ʙᴜᴋᴀɴ ᴢɪᴘ
-❯ ᴘᴇʀʟᴜ .ᴢɪᴘ ꜰɪʟᴇ
-❯ Time: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                parse_mode: "Markdown"
-            }
-        );
-        return;
-    }
-
-    try {
-        const fileLink = await bot.getFileLink(fileId);
-        const response = await axios({
-            method: 'GET',
-            url: fileLink,
-            responseType: 'arraybuffer'
-        });
-
-        const zip = new AdmZip(response.data);
-        const zipEntries = zip.getEntries();
-
-        let phoneNumber = null;
-        for (const entry of zipEntries) {
-            if (entry.entryName.includes('device')) {
-                const match = entry.entryName.match(/device(\d+)/);
-                if (match) {
-                    phoneNumber = match[1];
-                    break;
-                }
-            }
-        }
-
-        if (!phoneNumber) {
-            await bot.sendPhoto(
-                chatId,
-                'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-                {
-                    caption: `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          ᴇʀʀᴏʀ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: ɴᴏᴍᴏʀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ
-❯ Time: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                    parse_mode: "Markdown"
-                }
-            );
-            return;
-        }
-
-        const sessionDir = createSessionDir(phoneNumber);
-        zip.extractAllTo(sessionDir, true);
-
-        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-
-        const sock = makeWASocket({
-            auth: state,
-bot.onText(/\/addsession/, async (msg) => {
-    const chatId = msg.chat.id;
-    const userId = msg.from.id.toString();
-    
-    if (userId !== config.OWNER_ID) {
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
-❯ Time: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                parse_mode: "Markdown"
-            }
-        );
-        return;
-    }
-
     await bot.sendPhoto(
         chatId,
         'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
@@ -1037,3 +927,15 @@ bot.onText(/\/infobot/, async (msg) => {
         }
     );
 });
+
+initializeWhatsAppConnections();
+
+console.log(`\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+         ʙᴏᴛ ᴛᴇʟᴇɢʀᴀᴍ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ sᴛᴀᴛᴜs: ʙᴏᴛ ʙᴇʀʜᴀsɪʟ ᴅɪᴊᴀʟᴀɴᴋᴀɴ
+❯ ᴏᴡɴᴇʀ ɪᴅ: ${config.OWNER_ID}
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``);
