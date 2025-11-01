@@ -505,6 +505,148 @@ bot.on('callback_query', async (callbackQuery) => {
     await bot.answerCallbackQuery(callbackQuery.id);
 });
 
+bot.onText(/\/delbot (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    const phoneNumber = match[1];
+
+    if (userId !== config.OWNER_ID) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ", url: "https://t.me/JianCode" }]
+                    ]
+                }
+            }
+        );
+        return;
+    }
+
+    const sessionDir = path.join(SESSIONS_DIR, `device${phoneNumber}`);
+    
+    try {
+        if (sessions.has(phoneNumber)) {
+            const sock = sessions.get(phoneNumber);
+            await sock.logout();
+            sessions.delete(phoneNumber);
+        }
+
+        if (fs.existsSync(SESSIONS_FILE)) {
+            const activeNumbers = JSON.parse(fs.readFileSync(SESSIONS_FILE));
+            const updatedNumbers = activeNumbers.filter(num => num !== phoneNumber);
+            fs.writeFileSync(SESSIONS_FILE, JSON.stringify(updatedNumbers));
+        }
+
+        if (fs.existsSync(sessionDir)) {
+            fs.rmSync(sessionDir, { recursive: true, force: true });
+        }
+
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ʙᴏᴛ ᴅᴇʟᴇᴛᴇᴅ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɴᴏᴍᴏʀ: ${phoneNumber}
+❯ Status: ʙᴇʀʜᴀsɪʟ ᴅɪʜᴀᴘᴜs
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ", url: "https://t.me/JianCode" }]
+                    ]
+                }
+            }
+        );
+
+    } catch (error) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɴᴏᴍᴏʀ: ${phoneNumber}
+❯ Status: ɢᴀɢᴀʟ ᴍᴇɴɢʜᴀᴘᴜs
+❯ ᴘᴇsᴀɴ: ${error.message}
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ", url: "https://t.me/JianCode" }]
+                    ]
+                }
+            }
+        );
+    }
+});
+
+bot.onText(/\/delbot$/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+
+    if (userId !== config.OWNER_ID) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+        return;
+    }
+
+    await bot.sendPhoto(
+        chatId,
+        'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+        {
+            caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴜsᴀɢᴇ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴘᴇʀɪɴᴛᴀʜ: /delbot [ɴᴏᴍᴏʀ]
+❯ ᴄᴏɴᴛᴏʜ: /delbot 628123456789
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            parse_mode: "Markdown",
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ", url: "https://t.me/JianCode" }]
+                ]
+            }
+        }
+    );
+});
+
 bot.onText(/\/infobot/, async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id.toString();
