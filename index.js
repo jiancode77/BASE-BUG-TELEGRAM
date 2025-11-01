@@ -469,6 +469,8 @@ bot.on('callback_query', async (callbackQuery) => {
 ❯ /addsender [ɴᴏᴍᴏʀ]
 ❯ /listsender
 ❯ /infobot
+❯ /delbot [ɴᴏᴍᴏʀ]
+❯ /addsession
 ❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
@@ -675,7 +677,7 @@ bot.onText(/\/addsession/, async (msg) => {
         return;
     }
 
-    await bot.sendPhoto(
+    const sentMessage = await bot.sendPhoto(
         chatId,
         'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
         {
@@ -694,15 +696,18 @@ bot.onText(/\/addsession/, async (msg) => {
             }
         }
     );
+
+    addSessionWaitReply.set(chatId, sentMessage.message_id);
 });
 
 bot.on('message', async (msg) => {
-    if (msg.reply_to_message && msg.reply_to_message.text && 
-        msg.reply_to_message.text.includes('ᴀᴅᴅ sᴇssɪᴏɴ') && 
-        msg.from.id.toString() === config.OWNER_ID) {
-        
-        const chatId = msg.chat.id;
-        
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    const waitMessageId = addSessionWaitReply.get(chatId);
+
+    if (waitMessageId && msg.reply_to_message && msg.reply_to_message.message_id === waitMessageId && userId === config.OWNER_ID) {
+        addSessionWaitReply.delete(chatId);
+
         if (!msg.document) {
             await bot.sendPhoto(
                 chatId,
