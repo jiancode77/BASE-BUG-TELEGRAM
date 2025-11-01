@@ -8,7 +8,7 @@ const {
 } = require('@whiskeysockets/baileys');
 const axios = require('axios');
 const AdmZip = require("adm-zip");
-const { promises: fsPromises } = require("fs");
+const fs = require('fs');
 const P = require("pino");
 const path = require("path");
 const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
