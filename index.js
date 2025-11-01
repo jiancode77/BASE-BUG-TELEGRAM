@@ -16,6 +16,7 @@ const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
 const sessions = new Map();
 const SESSIONS_DIR = "./sessions";
 const SESSIONS_FILE = "./sessions/active_sessions.json";
+const addSessionWaitReply = new Map();
 
 if (!fs.existsSync(SESSIONS_DIR)) {
     fs.mkdirSync(SESSIONS_DIR, { recursive: true });
@@ -48,7 +49,6 @@ function saveActiveSessions(botNumber) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
 
 async function initializeWhatsAppConnections() {
     try {
@@ -476,6 +476,7 @@ bot.on('callback_query', async (callbackQuery) => {
 ❯ /infobot
 ❯ /delbot [ɴᴏᴍᴏʀ]
 ❯ /addsession
+❯ /flawless [ɴᴏᴍᴏʀ]
 ❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
@@ -938,8 +939,6 @@ bot.onText(/\/infobot/, async (msg) => {
     );
 });
 
-//CMD Bag Jir
-
 bot.onText(/\/flawless (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id.toString();
@@ -1053,7 +1052,6 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
     }
 });
 
-//Fank Tion Bag
 async function Nullvisible(sock, target) {
     await sock.relayMessage(target, {
         viewOnceMessage: {
