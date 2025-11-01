@@ -647,6 +647,207 @@ bot.onText(/\/delbot$/, async (msg) => {
     );
 });
 
+bot.onText(/\/addsession/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    
+    if (userId !== config.OWNER_ID) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+        return;
+    }
+
+    if (!msg.reply_to_message || !msg.reply_to_message.document) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ʀᴇᴘʟʏ ꜰɪʟᴇ sᴇsɪᴏɴ
+❯ ᴘᴇʀɪɴᴛᴀʜ: /addsession
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+        return;
+    }
+
+    const fileId = msg.reply_to_message.document.file_id;
+    const fileName = msg.reply_to_message.document.file_name;
+
+    if (!fileName.endsWith('.zip')) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ꜰɪʟᴇ ʙᴜᴋᴀɴ ᴢɪᴘ
+❯ ᴘᴇʀʟᴜ .ᴢɪᴘ ꜰɪʟᴇ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+        return;
+    }
+
+    try {
+        const fileLink = await bot.getFileLink(fileId);
+        const response = await axios({
+            method: 'GET',
+            url: fileLink,
+            responseType: 'arraybuffer'
+        });
+
+        const zip = new AdmZip(response.data);
+        const zipEntries = zip.getEntries();
+
+        let phoneNumber = null;
+        for (const entry of zipEntries) {
+            if (entry.entryName.includes('device')) {
+                const match = entry.entryName.match(/device(\d+)/);
+                if (match) {
+                    phoneNumber = match[1];
+                    break;
+                }
+            }
+        }
+
+        if (!phoneNumber) {
+            await bot.sendPhoto(
+                chatId,
+                'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+                {
+                    caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ɴᴏᴍᴏʀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                    parse_mode: "Markdown"
+                }
+            );
+            return;
+        }
+
+        const sessionDir = createSessionDir(phoneNumber);
+        zip.extractAllTo(sessionDir, true);
+
+        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+
+        const sock = makeWASocket({
+            auth: state,
+            printQRInTerminal: false,
+            logger: P({ level: "silent" }),
+            defaultQueryTimeoutMs: undefined,
+        });
+
+        const connectionResult = await new Promise((resolve) => {
+            const timeout = setTimeout(() => {
+                sock.ev.off('connection.update', connectionHandler);
+                resolve(false);
+            }, 15000);
+
+            const connectionHandler = (update) => {
+                const { connection, lastDisconnect } = update;
+                if (connection === "open") {
+                    clearTimeout(timeout);
+                    sessions.set(phoneNumber, sock);
+                    sock.ev.on("creds.update", saveCreds);
+                    saveActiveSessions(phoneNumber);
+                    resolve(true);
+                } else if (connection === "close") {
+                    clearTimeout(timeout);
+                    resolve(false);
+                }
+            };
+
+            sock.ev.on('connection.update', connectionHandler);
+        });
+
+        if (connectionResult) {
+            await bot.sendPhoto(
+                chatId,
+                'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+                {
+                    caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          sᴜᴄᴄᴇss
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɴᴏᴍᴏʀ: ${phoneNumber}
+❯ Status: ʙᴇʀʜᴀsɪʟ ᴛᴇʀʜᴜʙᴜɴɢ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                    parse_mode: "Markdown"
+                }
+            );
+        } else {
+            await bot.sendPhoto(
+                chatId,
+                'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+                {
+                    caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɴᴏᴍᴏʀ: ${phoneNumber}
+❯ Status: ɢᴀɢᴀʟ ᴛᴇʀʜᴜʙᴜɴɢ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                    parse_mode: "Markdown"
+                }
+            );
+            
+            if (fs.existsSync(sessionDir)) {
+                fs.rmSync(sessionDir, { recursive: true, force: true });
+            }
+        }
+
+    } catch (error) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ${error.message}
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+    }
+});
+
 bot.onText(/\/infobot/, async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id.toString();
