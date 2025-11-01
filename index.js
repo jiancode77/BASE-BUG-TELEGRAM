@@ -309,17 +309,72 @@ bot.onText(/\/addsender/, async (msg) => {
     await connectToWhatsApp(phoneNumber, chatId);
 });
 
-bot.onText(/\/start/, async (msg) => {
+bot.onText(/\/listsender/, async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id.toString();
     
+    if (userId !== config.OWNER_ID) {
+        return bot.sendMessage(
+            chatId,
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          𝗔𝗞𝗦𝗘𝗦 𝗗𝗜𝗧𝗢𝗟𝗔𝗞
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: Hanya owner yang dapat menggunakan command ini
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            { parse_mode: "Markdown" }
+        );
+    }
+
+    let sessionList = "ᴛɪᴅᴀᴋ ᴀᴅᴀ sᴇsɪ ᴀᴋᴛɪꜰ";
+    let activeCount = 0;
+    let savedCount = 0;
+
+    if (fs.existsSync(SESSIONS_FILE)) {
+        const activeNumbers = JSON.parse(fs.readFileSync(SESSIONS_FILE));
+        savedCount = activeNumbers.length;
+        
+        if (activeNumbers.length > 0) {
+            sessionList = activeNumbers.map((num, index) => 
+                `• ${num} ${sessions.has(num) ? '🟢' : '🔴'}`
+            ).join('\n');
+            activeCount = Array.from(sessions.keys()).length;
+        }
+    }
+    
+    await bot.sendMessage(
+        chatId,
+        `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+        ʟɪsᴛ sᴇɴᴅᴇʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${sessionList}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴀᴋᴛɪꜰ: ${activeCount}
+❯ ᴛᴇʀsɪᴍᴘᴀɴ: ${savedCount}
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+        { parse_mode: "Markdown" }
+    );
+});
+
+bot.onText(/\/start/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    const username = msg.from.username || 'Tidak ada username';
+    const firstName = msg.from.first_name || '';
+    const lastName = msg.from.last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+
     if (userId === config.OWNER_ID) {
         const keyboard = {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: "ᴀᴅᴅ sᴇɴᴅᴇʀ", callback_data: "add_sender" }],
-                    [{ text: "ɪɴꜰᴏ ʙᴏᴛ", callback_data: "info_bot" }],
-                    [{ text: "ʟɪsᴛ sᴇsɪ", callback_data: "list_sessions" }]
+                    [{ text: "ᴀᴄᴄᴇss ᴏᴡɴᴇʀ", callback_data: "access_owner" }],
+                    [{ text: "ᴛᴏᴏʟs ᴍᴇɴᴜ", callback_data: "tools_menu" }]
                 ]
             }
         };
@@ -330,11 +385,10 @@ bot.onText(/\/start/, async (msg) => {
             {
                 caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-         ʏᴏᴜ ʙᴏᴛ ᴏᴡɴᴇʀ
+          sғᴇsʀ ᴏᴡɴᴇʀ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ɴɢᴀᴘᴀɪɴ xɪʟʟ
-❯ ɪᴅ: ${userId}
-❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+❯ Status: ᴀᴋᴛɪғ
+❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
                 parse_mode: "Markdown",
@@ -342,17 +396,20 @@ bot.onText(/\/start/, async (msg) => {
             }
         );
     } else {
-        await bot.sendMessage(
+        await bot.sendPhoto(
             chatId,
-            `\`\`\`
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          𝗔𝗞𝗦𝗘𝗦 𝗗𝗜𝗧𝗢𝗟𝗔𝗞
+          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: Bot khusus owner
+❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-            { parse_mode: "Markdown" }
+                parse_mode: "Markdown"
+            }
         );
     }
 });
@@ -360,84 +417,138 @@ bot.onText(/\/start/, async (msg) => {
 bot.on('callback_query', async (callbackQuery) => {
     const msg = callbackQuery.message;
     const userId = callbackQuery.from.id.toString();
+    const username = callbackQuery.from.username || 'Tidak ada username';
+    const firstName = callbackQuery.from.first_name || '';
+    const lastName = callbackQuery.from.last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim();
     const chatId = msg.chat.id;
     const data = callbackQuery.data;
 
     if (userId !== config.OWNER_ID) {
-        return bot.answerCallbackQuery(callbackQuery.id, {
-            text: "ᴋᴀᴍᴜ ʙᴜᴋᴀɴ ᴏᴡɴᴇʀ!",
+        await bot.answerCallbackQuery(callbackQuery.id, {
+            text: "ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ!",
             show_alert: true
         });
+        return;
     }
 
-    if (data === "add_sender") {
-        await bot.sendMessage(
-            chatId,
+    if (data === "access_owner") {
+        await bot.editMessageCaption(
             `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-         ᴀᴅᴅ sᴇɴᴅᴇʀ
+          ᴏᴡɴᴇʀ ɪɴғᴏ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ᴋɪʀɪᴍ: /addsender [nomor]
-❯ ᴄᴏɴᴛᴏʜ: /addsender 628123456789
+❯ ɪᴅ: ${userId}
+❴ ᴜsᴇʀɴᴀᴍᴇ: @${username}
+❴ ɴᴀᴍᴇ: ${fullName}
 ❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-            { parse_mode: "Markdown" }
-        );
-    } else if (data === "info_bot") {
-        const activeSessions = sessions.size;
-        const totalSavedSessions = fs.existsSync(SESSIONS_FILE) 
-            ? JSON.parse(fs.readFileSync(SESSIONS_FILE)).length 
-            : 0;
-            
-        await bot.sendMessage(
-            chatId,
-            `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-         ɪɴꜰᴏ ʙᴏᴛ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ sᴇsɪ ᴀᴋᴛɪꜰ: ${activeSessions}
-❯ sᴇsɪ ᴛᴇʀsɪᴍᴘᴀɴ: ${totalSavedSessions}
-❯ ᴏᴡɴᴇʀ ɪᴅ: ${userId}
-❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-            { parse_mode: "Markdown" }
-        );
-    } else if (data === "list_sessions") {
-        let sessionList = "ᴛɪᴅᴀᴋ ᴀᴅᴀ sᴇsɪ";
-        if (fs.existsSync(SESSIONS_FILE)) {
-            const activeNumbers = JSON.parse(fs.readFileSync(SESSIONS_FILE));
-            if (activeNumbers.length > 0) {
-                sessionList = activeNumbers.map(num => `• ${num}`).join('\n');
+            {
+                chat_id: chatId,
+                message_id: msg.message_id,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ʙᴀᴄᴋ", callback_data: "back_start" }]
+                    ]
+                }
             }
-        }
-        
-        await bot.sendMessage(
-            chatId,
+        );
+    } else if (data === "tools_menu") {
+        await bot.editMessageCaption(
             `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-        ʟɪsᴛ sᴇsɪ
+          ᴛᴏᴏʟs ᴍᴇɴᴜ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${sessionList}
+❯ /addsender [ɴᴏᴍᴏʀ]
+❯ /listsender
+❯ /infobot
 ❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-            { parse_mode: "Markdown" }
+            {
+                chat_id: chatId,
+                message_id: msg.message_id,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ʙᴀᴄᴋ", callback_data: "back_start" }]
+                    ]
+                }
+            }
+        );
+    } else if (data === "back_start") {
+        await bot.editMessageCaption(
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          sғᴇsʀ ᴏᴡɴᴇʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ᴀᴋᴛɪғ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            {
+                chat_id: chatId,
+                message_id: msg.message_id,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ᴀᴄᴄᴇss ᴏᴡɴᴇʀ", callback_data: "access_owner" }],
+                        [{ text: "ᴛᴏᴏʟs ᴍᴇɴᴜ", callback_data: "tools_menu" }]
+                    ]
+                }
+            }
         );
     }
 
     await bot.answerCallbackQuery(callbackQuery.id);
 });
 
-initializeWhatsAppConnections();
-
-console.log(`\`\`\`
+bot.onText(/\/infobot/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    const username = msg.from.username || 'Tidak ada username';
+    
+    if (userId !== config.OWNER_ID) {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-         ʙᴏᴛ ᴛᴇʟᴇɢʀᴀᴍ
+          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ sᴛᴀᴛᴜs: ʙᴏᴛ ʙᴇʀʜᴀsɪʟ ᴅɪᴊᴀʟᴀɴᴋᴀɴ
-❯ ᴏᴡɴᴇʀ ɪᴅ: ${config.OWNER_ID}
+❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            }
+        );
+        return;
+    }
+
+    const activeSessions = sessions.size;
+    const totalSavedSessions = fs.existsSync(SESSIONS_FILE) 
+        ? JSON.parse(fs.readFileSync(SESSIONS_FILE)).length 
+        : 0;
+        
+    await bot.sendPhoto(
+        chatId,
+        'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+        {
+            caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ʙᴏᴛ ɪɴғᴏ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ sᴇsɪ ᴀᴋᴛɪғ: ${activeSessions}
+❯ sᴇsɪ ᴛᴇʀsɪᴍᴘᴀɴ: ${totalSavedSessions}
+❯ ᴏᴡɴᴇʀ: @${username}
 ❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``);
+\`\`\``,
+            parse_mode: "Markdown"
+        }
+    );
+});
