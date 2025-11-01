@@ -970,7 +970,7 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
 
     const sock = sessions.values().next().value;
     
-    if (!sock || sock.connection !== "open") {
+    if (!sock || !sock.user) {
         await bot.sendPhoto(
             chatId,
             'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
@@ -998,7 +998,7 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❯ ᴛᴀʀɢᴇᴛ: ${target}
-❯ Status: ᴍᴇɴɢɪʀɪᴍ...
+❯ Status: ᴍᴇɴɢɪɴɪsɪᴀʟɪsᴀsɪ...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
@@ -1007,6 +1007,47 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
     );
 
     try {
+        const progressStages = [
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴘʀᴏsᴇs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ Status: ᴍᴇɴʏɪᴀᴘᴋᴀɴ ᴘᴇsᴀɴ...
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴘʀᴏsᴇs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ Status: ᴍᴇɴɢɪʀɪᴍᴋᴀɴ...
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴘʀᴏsᴇs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴛᴀʀɢᴇᴛ: ${target}
+❯ Status: ᴍᴇᴍᴘʀᴏsᴇs...
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``
+        ];
+
+        for (let i = 0; i < progressStages.length; i++) {
+            await sleep(850);
+            await bot.editMessageCaption(progressStages[i], {
+                chat_id: chatId,
+                message_id: processingMsg.message_id,
+                parse_mode: "Markdown"
+            });
+        }
+
         await Nullvisible(sock, target);
         await sleep(500);
 
