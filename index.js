@@ -1,4 +1,3 @@
-// index.js (File Utama)
 const config = require("./database/config.js");
 const TelegramBot = require("node-telegram-bot-api");
 const moment = require('moment');
@@ -271,8 +270,24 @@ async function connectToWhatsApp(botNumber, chatId) {
 
 bot.onText(/\/addsender/, async (msg) => {
     const chatId = msg.chat.id;
-    const messageText = msg.text;
+    const userId = msg.from.id.toString();
     
+    if (userId !== config.OWNER_ID) {
+        return bot.sendMessage(
+            chatId,
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          𝗔𝗞𝗦𝗘𝗦 𝗗𝗜𝗧𝗢𝗟𝗔𝗞
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: Hanya owner yang dapat menggunakan command ini
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            { parse_mode: "Markdown" }
+        );
+    }
+
+    const messageText = msg.text;
     const phoneNumber = messageText.split(' ')[1];
     
     if (!phoneNumber) {
@@ -294,14 +309,135 @@ bot.onText(/\/addsender/, async (msg) => {
     await connectToWhatsApp(phoneNumber, chatId);
 });
 
+bot.onText(/\/start/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    
+    if (userId === config.OWNER_ID) {
+        const keyboard = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "ᴀᴅᴅ sᴇɴᴅᴇʀ", callback_data: "add_sender" }],
+                    [{ text: "ɪɴꜰᴏ ʙᴏᴛ", callback_data: "info_bot" }],
+                    [{ text: "ʟɪsᴛ sᴇsɪ", callback_data: "list_sessions" }]
+                ]
+            }
+        };
+
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+         ʏᴏᴜ ʙᴏᴛ ᴏᴡɴᴇʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɴɢᴀᴘᴀɪɴ xɪʟʟ
+❯ ɪᴅ: ${userId}
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown",
+                reply_markup: keyboard.reply_markup
+            }
+        );
+    } else {
+        await bot.sendMessage(
+            chatId,
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          𝗔𝗞𝗦𝗘𝗦 𝗗𝗜𝗧𝗢𝗟𝗔𝗞
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: Bot khusus owner
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            { parse_mode: "Markdown" }
+        );
+    }
+});
+
+bot.on('callback_query', async (callbackQuery) => {
+    const msg = callbackQuery.message;
+    const userId = callbackQuery.from.id.toString();
+    const chatId = msg.chat.id;
+    const data = callbackQuery.data;
+
+    if (userId !== config.OWNER_ID) {
+        return bot.answerCallbackQuery(callbackQuery.id, {
+            text: "ᴋᴀᴍᴜ ʙᴜᴋᴀɴ ᴏᴡɴᴇʀ!",
+            show_alert: true
+        });
+    }
+
+    if (data === "add_sender") {
+        await bot.sendMessage(
+            chatId,
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+         ᴀᴅᴅ sᴇɴᴅᴇʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ᴋɪʀɪᴍ: /addsender [nomor]
+❯ ᴄᴏɴᴛᴏʜ: /addsender 628123456789
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            { parse_mode: "Markdown" }
+        );
+    } else if (data === "info_bot") {
+        const activeSessions = sessions.size;
+        const totalSavedSessions = fs.existsSync(SESSIONS_FILE) 
+            ? JSON.parse(fs.readFileSync(SESSIONS_FILE)).length 
+            : 0;
+            
+        await bot.sendMessage(
+            chatId,
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+         ɪɴꜰᴏ ʙᴏᴛ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ sᴇsɪ ᴀᴋᴛɪꜰ: ${activeSessions}
+❯ sᴇsɪ ᴛᴇʀsɪᴍᴘᴀɴ: ${totalSavedSessions}
+❯ ᴏᴡɴᴇʀ ɪᴅ: ${userId}
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            { parse_mode: "Markdown" }
+        );
+    } else if (data === "list_sessions") {
+        let sessionList = "ᴛɪᴅᴀᴋ ᴀᴅᴀ sᴇsɪ";
+        if (fs.existsSync(SESSIONS_FILE)) {
+            const activeNumbers = JSON.parse(fs.readFileSync(SESSIONS_FILE));
+            if (activeNumbers.length > 0) {
+                sessionList = activeNumbers.map(num => `• ${num}`).join('\n');
+            }
+        }
+        
+        await bot.sendMessage(
+            chatId,
+            `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+        ʟɪsᴛ sᴇsɪ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${sessionList}
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+            { parse_mode: "Markdown" }
+        );
+    }
+
+    await bot.answerCallbackQuery(callbackQuery.id);
+});
+
 initializeWhatsAppConnections();
 
 console.log(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-         𝗕𝗢𝗧 𝗧𝗘𝗟𝗘𝗚𝗥𝗔𝗠
+         ʙᴏᴛ ᴛᴇʟᴇɢʀᴀᴍ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: Bot berhasil dijalankan
-❯ Command: /addsender [nomor]
-❯ Time: ${moment().format('HH:mm:ss')}
+❯ sᴛᴀᴛᴜs: ʙᴏᴛ ʙᴇʀʜᴀsɪʟ ᴅɪᴊᴀʟᴀɴᴋᴀɴ
+❯ ᴏᴡɴᴇʀ ɪᴅ: ${config.OWNER_ID}
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``);
