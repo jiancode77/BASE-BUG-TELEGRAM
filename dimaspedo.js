@@ -2,7 +2,6 @@ import { Telegraf } from 'telegraf';
 import { JianBase } from './jianbase.js';
 import qrcode from 'qrcode-terminal';
 import fs from 'fs';
-import path from 'path';
 
 const BOT_TOKEN = '7987531387:AAE2xVu_asKwVZvsBVP9hHuctPTaQHjmuTM';
 const bot = new Telegraf(BOT_TOKEN);
@@ -49,6 +48,10 @@ function setUserSession(telegramId, sessionId) {
   saveUserSessions();
 }
 
+function escapeMarkdownV2(text) {
+  return text.replace(/([_\*\[\]\(\)\~\`\>\#\+\-\=\|\{\}\.\!])/g, '\\$1');
+}
+
 function createCodeBlock(command, status, additional = '') {
   const time = new Date().toLocaleString('id-ID');
   let title = "P H O N E  R E G I S T R A T I O N";
@@ -80,19 +83,19 @@ bot.start(async (ctx) => {
   const codeBlock = createCodeBlock('/start', 'Bot Started');
   const welcomeMessage = `
 
-🤖 *JIAN TELEGRAM-WHATSAPP BOT*
+🤖 *JIAN TELEGRAM\\-WHATSAPP BOT*
 
-Selamat datang di bot penghubung Telegram dan WhatsApp!
+Selamat datang di bot penghubung Telegram dan WhatsApp\\!
 
 *Perintah Tersedia:*
-/addsender - Hubungkan akun WhatsApp
-/mystatus - Cek status koneksi
-/send - Kirim pesan WhatsApp
-/disconnect - Putuskan WhatsApp
-/help - Bantuan
+/addsender \\- Hubungkan akun WhatsApp
+/mystatus \\- Cek status koneksi
+/send \\- Kirim pesan WhatsApp
+/disconnect \\- Putuskan WhatsApp
+/help \\- Bantuan
 
 *Fitur:*
-✅ Multi-session support
+✅ Multi\\-session support
 ✅ QR Code & Pairing Code
 ✅ Message bridging
 ✅ Session persistence`;
@@ -107,15 +110,15 @@ bot.help(async (ctx) => {
 *🤖 JIAN BOT HELP*
 
 *Commands:*
-/addsender - Hubungkan WhatsApp Anda
-/mystatus - Cek koneksi WhatsApp
-/send - Kirim pesan WhatsApp
-/disconnect - Putuskan WhatsApp
-/help - Tampilkan bantuan
+/addsender \\- Hubungkan WhatsApp Anda
+/mystatus \\- Cek koneksi WhatsApp
+/send \\- Kirim pesan WhatsApp
+/disconnect \\- Putuskan WhatsApp
+/help \\- Tampilkan bantuan
 
 *Contoh:*
 /send 6281234567890 Halo dari Telegram\\!
-/addsender - Mulai proses koneksi WhatsApp
+/addsender \\- Mulai proses koneksi WhatsApp
 
 *Catatan:* Format nomor: 6281234567890`;
 
@@ -149,13 +152,13 @@ bot.command('addsender', async (ctx) => {
 
 Pilih metode koneksi:
 
-1\\. *QR Code* - Scan QR code dengan WhatsApp
-2\\. *Pairing Code* - Masukkan kode di WhatsApp
+1\\. *QR Code* \\- Scan QR code dengan WhatsApp
+2\\. *Pairing Code* \\- Masukkan kode di WhatsApp
 
 Balas dengan:
-*QR* - untuk QR Code
-*PAIR* - untuk Pairing Code
-*CANCEL* - untuk membatalkan`;
+*QR* \\- untuk QR Code
+*PAIR* \\- untuk Pairing Code
+*CANCEL* \\- untuk membatalkan`;
 
   await ctx.replyWithMarkdownV2(codeBlock + connectionMessage);
 });
@@ -197,7 +200,7 @@ Status: Menunggu scan`;
     case 'pairing_ready':
       statusMessage = `🔢 *PAIRING CODE SIAP*
 
-Kode Pairing: ${info.pairingCode}
+Kode Pairing: ${escapeMarkdownV2(info.pairingCode)}
 Status: Menunggu pairing`;
       break;
     case 'disconnected':
@@ -209,7 +212,7 @@ Gunakan /addsender untuk menghubungkan ulang`;
     default:
       statusMessage = `⚪ *STATUS TIDAK DIKENAL*
 
-Status: ${info.status}`;
+Status: ${escapeMarkdownV2(info.status)}`;
   }
 
   await ctx.replyWithMarkdownV2(codeBlock + statusMessage);
@@ -248,12 +251,12 @@ Contoh: /send 6281234567890 Halo dari Telegram\\!`;
     await session.sendMessage(jid, message);
     const successMessage = `
 
-✅ Pesan terkirim ke ${number}`;
+✅ Pesan terkirim ke ${escapeMarkdownV2(number)}`;
     await ctx.replyWithMarkdownV2(codeBlock + successMessage);
   } catch (error) {
     const errorMessage = `
 
-❌ Gagal mengirim pesan: ${error.message}`;
+❌ Gagal mengirim pesan: ${escapeMarkdownV2(error.message)}`;
     await ctx.replyWithMarkdownV2(codeBlock + errorMessage);
   }
 });
@@ -285,7 +288,7 @@ bot.command('disconnect', async (ctx) => {
   } catch (error) {
     const errorMessage = `
 
-❌ Error memutuskan koneksi: ${error.message}`;
+❌ Error memutuskan koneksi: ${escapeMarkdownV2(error.message)}`;
     await ctx.replyWithMarkdownV2(codeBlock + errorMessage);
   }
 });
@@ -308,7 +311,7 @@ bot.on('text', async (ctx) => {
 📱 *QR CODE DIHASILKAN*
 
 Cek terminal untuk QR code
-Scan dengan WhatsApp > Linked Devices`;
+Scan dengan WhatsApp \\> Linked Devices`;
         await ctx.replyWithMarkdownV2(codeBlock + message);
       } else {
         const message = `
@@ -320,7 +323,7 @@ Tunggu sebentar dan coba lagi`;
     } catch (error) {
       const message = `
 
-❌ Error: ${error.message}`;
+❌ Error: ${escapeMarkdownV2(error.message)}`;
       await ctx.replyWithMarkdownV2(codeBlock + message);
     }
   } else if (text.toUpperCase() === 'PAIR') {
@@ -328,7 +331,7 @@ Tunggu sebentar dan coba lagi`;
     try {
       const phoneNumber = ctx.from.id.toString();
       const code = await session.requestPairingCode(phoneNumber);
-      const formattedCode = code.match(/.{1,4}/g)?.join('-') || code;
+      const formattedCode = code.match(/.{1,4}/g)?.join('\\-') || code;
       
       const pairingMessage = `
 
@@ -338,7 +341,7 @@ Kode pairing Anda: *${formattedCode}*
 
 *Instruksi:*
 1\\. Buka WhatsApp
-2\\. Pergi ke Settings > Linked Devices
+2\\. Pergi ke Settings \\> Linked Devices
 3\\. Ketuk "Link a Device"
 4\\. Masukkan kode ini: *${formattedCode}*`;
 
@@ -346,7 +349,7 @@ Kode pairing Anda: *${formattedCode}*
     } catch (error) {
       const message = `
 
-❌ Error: ${error.message}`;
+❌ Error: ${escapeMarkdownV2(error.message)}`;
       await ctx.replyWithMarkdownV2(codeBlock + message);
     }
   } else if (text.toUpperCase() === 'CANCEL') {
@@ -365,9 +368,9 @@ Kode pairing Anda: *${formattedCode}*
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
-console.log('🤖 Starting Telegram Bot...');
+console.log('Starting Telegram Bot...');
 bot.launch().then(() => {
-  console.log('✅ Telegram Bot is running!');
+  console.log('Telegram Bot is running!');
 }).catch(error => {
-  console.error('❌ Failed to start bot:', error);
+  console.error('Failed to start bot:', error);
 });
