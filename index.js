@@ -7,7 +7,8 @@ const {
     DisconnectReason
 } = require('@whiskeysockets/baileys');
 const axios = require('axios');
-const fs = require("fs");
+const AdmZip = require("adm-zip");
+const { promises: fsPromises } = require("fs");
 const P = require("pino");
 const path = require("path");
 const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
