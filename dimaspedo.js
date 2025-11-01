@@ -2,7 +2,6 @@ import { Telegraf } from 'telegraf';
 import { JianBase } from './jianbase.js';
 import qrcode from 'qrcode-terminal';
 import fs from 'fs';
-import path from 'path';
 
 const BOT_TOKEN = '7987531387:AAE2xVu_asKwVZvsBVP9hHuctPTaQHjmuTM';
 const bot = new Telegraf(BOT_TOKEN);
@@ -16,9 +15,7 @@ function loadUserSessions() {
       const data = fs.readFileSync(USER_SESSIONS_FILE, 'utf8');
       return JSON.parse(data);
     }
-  } catch (error) {
-    console.error('Error loading user sessions:', error);
-  }
+  } catch (error) {}
   return {};
 }
 
@@ -29,9 +26,7 @@ function saveUserSessions() {
       sessions[telegramId] = sessionId;
     }
     fs.writeFileSync(USER_SESSIONS_FILE, JSON.stringify(sessions, null, 2));
-  } catch (error) {
-    console.error('Error saving user sessions:', error);
-  }
+  } catch (error) {}
 }
 
 const userSessions = loadUserSessions();
@@ -49,22 +44,18 @@ function setUserSession(telegramId, sessionId) {
   saveUserSessions();
 }
 
-function createCodeBlock(command, status, additional = '') {
+function createCodeBlock() {
   return `◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-✧ S E S U A I K A N   S A J A ✧
+✧  ✧
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Command: ${command}
-❯ Status: ${status}
-❯ Time: ${new Date().toLocaleString('id-ID')}
-${additional}◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢`;
-}
-
-function escapeMarkdown(text) {
-  return text.replace(/([_*[\]()~`>#+\-=|{}.!])/g, '\\$1');
+❯ 
+❯ 
+❯ 
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢`;
 }
 
 bot.start(async (ctx) => {
-  const codeBlock = createCodeBlock('/start', 'Bot Started');
+  const codeBlock = createCodeBlock();
   const welcomeMessage = `${codeBlock}
 
 *Welcome to JIAN Telegram\\-WhatsApp Bot*
@@ -74,22 +65,22 @@ bot.start(async (ctx) => {
 /mystatus \\- Check connection status
 /send \\- Send message via WhatsApp
 /disconnect \\- Disconnect WhatsApp
-/help \\- Show this help message
+/help \\- Show thisolipid help message
 
 *Features:*
-✅ Multi\\-session support
-✅ QR Code & Pairing Code
-✅ Message bridging
-✅ Session persistence`;
+Multi\\-session support
+QR Code & Pairing Code
+Message bridging
+Session persistence`.trim();
 
-  await ctx.replyWithMarkdownV2(welcomeMessage);
+  await ctx.reply(welcomeMessage, { parse_mode: 'MarkdownV2' });
 });
 
 bot.help(async (ctx) => {
-  const codeBlock = createCodeBlock('/help', 'Help Menu');
+  const codeBlock = createCodeBlock();
   const helpMessage = `${codeBlock}
 
-*🤖 JIAN BOT HELP*
+*JIAN BOT HELP*
 
 *Commands:*
 /addsender \\- Connect your WhatsApp account
@@ -102,9 +93,9 @@ bot.help(async (ctx) => {
 /send 6281234567890 Hello from Telegram\\!
 /addsender \\- Start WhatsApp connection process
 
-*Note:* Number format: 6281234567890 \\(without \\+ \\)`;
+*Note:* Number format: 6281234567890 \\(without \\+ \\)`.trim();
 
-  await ctx.replyWithMarkdownV2(helpMessage);
+  await ctx.reply(helpMessage, { parse_mode: 'MarkdownV2' });
 });
 
 bot.command('addsender', async (ctx) => {
@@ -112,11 +103,9 @@ bot.command('addsender', async (ctx) => {
   let session = getUserSession(telegramId);
 
   if (session && session.isConnected) {
-    const codeBlock = createCodeBlock('/addsender', 'Already Connected');
-    const message = `${codeBlock}
-
-❌ You already have an active WhatsApp connection\\. Use /disconnect first`;
-    await ctx.replyWithMarkdownV2(message);
+    const codeBlock = createCodeBlock();
+    const message = `${codeBlock}\n\nYou already have an active WhatsApp connection\\. Use /disconnect first`;
+    await ctx.reply(message, { parse_mode: 'MarkdownV2' });
     return;
   }
 
@@ -127,10 +116,10 @@ bot.command('addsender', async (ctx) => {
   whatsappSessions.set(sessionId, session);
   setUserSession(telegramId, sessionId);
 
-  const codeBlock = createCodeBlock('/addsender', 'Connecting...');
+  const codeBlock = createCodeBlock();
   const connectionMessage = `${codeBlock}
 
-🔗 *CONNECT WHATSAPP*
+*CONNECT WHATSAPP*
 
 Choose connection method:
 
@@ -140,23 +129,20 @@ Choose connection method:
 Please reply with:
 *QR* \\- for QR Code
 *PAIR* \\- for Pairing Code
-*CANCEL* \\- to cancel`;
+*CANCEL* \\- to cancel`.trim();
 
-  await ctx.replyWithMarkdownV2(connectionMessage);
+  await ctx.reply(connectionMessage, { parse_mode: 'MarkdownV2' });
 });
 
 bot.command('mystatus', async (ctx) => {
   const telegramId = ctx.from.id.toString();
   const session = getUserSession(telegramId);
 
-  const status = session ? (session.isConnected ? 'Connected' : 'Disconnected') : 'No Session';
-  const codeBlock = createCodeBlock('/mystatus', status);
+  const codeBlock = createCodeBlock();
 
   if (!session) {
-    const message = `${codeBlock}
-
-❌ No WhatsApp session found\\. Use /addsender to connect`;
-    await ctx.replyWithMarkdownV2(message);
+    const message = `${codeBlock}\n\nNo WhatsApp session found\\. Use /addsender to connect`;
+    await ctx.reply(message, { parse_mode: 'MarkdownV2' });
     return;
   }
 
@@ -165,66 +151,58 @@ bot.command('mystatus', async (ctx) => {
 
   switch (info.status) {
     case 'connected':
-      statusMessage = `🟢 *WHATSAPP CONNECTED*
-
-✅ Status: Connected
-📱 Session: Active
-🔗 Ready to send messages
+      statusMessage = `*WHATSAPP CONNECTED*
+      
+Status: Connected
+Session: Active
+Ready to send messages
 
 Use /send to send messages`;
       break;
     case 'qr_ready':
-      statusMessage = `📱 *QR CODE READY*
-
-Check your Telegram messages for QR code
+      statusMessage = `*QR CODE READY*
+      
+Check your terminal for QR code
 Status: Waiting for scan`;
       break;
     case 'pairing_ready':
-      statusMessage = `🔢 *PAIRING CODE READY*
-
+      statusMessage = `*PAIRING CODE READY*
+      
 Pairing Code: ${info.pairingCode}
 Status: Waiting for pairing`;
       break;
     case 'disconnected':
-      statusMessage = `🔴 *DISCONNECTED*
-
+      statusMessage = `*DISCONNECTED*
+      
 Status: Not connected
 Use /addsender to reconnect`;
       break;
     default:
-      statusMessage = `⚪ *UNKNOWN STATUS*
-
+      statusMessage = `*UNKNOWN STATUS*
+      
 Status: ${info.status}`;
   }
 
-  const fullMessage = `${codeBlock}
-
-${statusMessage}`;
-  await ctx.replyWithMarkdownV2(fullMessage);
+  const fullMessage = `${codeBlock}\n\n${statusMessage}`;
+  await ctx.reply(fullMessage, { parse_mode: 'MarkdownV2' });
 });
 
 bot.command('send', async (ctx) => {
   const telegramId = ctx.from.id.toString();
   const session = getUserSession(telegramId);
 
-  const status = session ? (session.isConnected ? 'Connected' : 'Disconnected') : 'No Session';
-  const codeBlock = createCodeBlock('/send', status);
+  const codeBlock = createCodeBlock();
 
   if (!session || !session.isConnected) {
-    const message = `${codeBlock}
-
-❌ WhatsApp not connected\\. Use /addsender first`;
-    await ctx.replyWithMarkdownV2(message);
+    const message = `${codeBlock}\n\nWhatsApp not connected\\. Use /addsender first`;
+    await ctx.reply(message, { parse_mode: 'MarkdownV2' });
     return;
   }
 
   const args = ctx.message.text.split(' ').slice(1);
   if (args.length < 2) {
-    const usage = `${codeBlock}
-
-❌ Usage: /send <number> <message>
-Example: /send 6281234567890 Hello from Telegram\\!`;
-    await ctx.replyWithMarkdownV2(usage);
+    const usage = `${codeBlock}\n\nUsage: /send <number> <message>\nExample: /send 6281234567890 Hello from Telegram\\!`;
+    await ctx.reply(usage, { parse_mode: 'MarkdownV2' });
     return;
   }
 
@@ -234,15 +212,11 @@ Example: /send 6281234567890 Hello from Telegram\\!`;
 
   try {
     await session.sendMessage(jid, message);
-    const successMessage = `${codeBlock}
-
-✅ Message sent to ${number}`;
-    await ctx.replyWithMarkdownV2(successMessage);
+    const successMessage = `${codeBlock}\n\nMessage sent to ${number}`;
+    await ctx.reply(successMessage, { parse_mode: 'MarkdownV2' });
   } catch (error) {
-    const errorMessage = `${codeBlock}
-
-❌ Failed to send message: ${error.message}`;
-    await ctx.replyWithMarkdownV2(errorMessage);
+    const errorMessage = `${codeBlock}\n\nFailed to send message: ${error.message}`;
+    await ctx.reply(errorMessage, { parse_mode: 'MarkdownV2' });
   }
 });
 
@@ -250,14 +224,11 @@ bot.command('disconnect', async (ctx) => {
   const telegramId = ctx.from.id.toString();
   const session = getUserSession(telegramId);
 
-  const status = session ? (session.isConnected ? 'Connected' : 'Disconnected') : 'No Session';
-  const codeBlock = createCodeBlock('/disconnect', status);
+  const codeBlock = createCodeBlock();
 
   if (!session) {
-    const message = `${codeBlock}
-
-❌ No active session to disconnect`;
-    await ctx.replyWithMarkdownV2(message);
+    const message = `${codeBlock}\n\nNo active session to disconnect`;
+    await ctx.reply(message, { parse_mode: 'MarkdownV2' });
     return;
   }
 
@@ -266,15 +237,11 @@ bot.command('disconnect', async (ctx) => {
     whatsappSessions.delete(userSessions[telegramId]);
     delete userSessions[telegramId];
     saveUserSessions();
-    const successMessage = `${codeBlock}
-
-✅ WhatsApp disconnected successfully`;
-    await ctx.replyWithMarkdownV2(successMessage);
+    const successMessage = `${codeBlock}\n\nWhatsApp disconnected successfully`;
+    await ctx.reply(successMessage, { parse_mode: 'MarkdownV2' });
   } catch (error) {
-    const errorMessage = `${codeBlock}
-
-❌ Error disconnecting: ${error.message}`;
-    await ctx.replyWithMarkdownV2(errorMessage);
+    const errorMessage = `${codeBlock}\n\nError disconnecting: ${error.message}`;
+    await ctx.reply(errorMessage, { parse_mode: 'MarkdownV2' });
   }
 });
 
@@ -286,33 +253,23 @@ bot.on('text', async (ctx) => {
   if (!session) return;
 
   if (text.toUpperCase() === 'QR') {
-    const codeBlock = createCodeBlock('QR', 'Requesting QR Code');
+    const codeBlock = createCodeBlock();
     try {
       const qr = await session.getQRCode();
       if (qr) {
         qrcode.generate(qr, { small: true });
-        const message = `${codeBlock}
-
-📱 *QR CODE GENERATED*
-
-Check your terminal for QR code
-Scan with WhatsApp > Linked Devices`;
-        await ctx.replyWithMarkdownV2(message);
+        const message = `${codeBlock}\n\n*QR CODE GENERATED*\n\nCheck your terminal for QR code\\nScan with WhatsApp > Linked Devices`;
+        await ctx.reply(message, { parse_mode: 'MarkdownV2' });
       } else {
-        const message = `${codeBlock}
-
-❌ QR code not available yet
-Please wait a moment and try again`;
-        await ctx.replyWithMarkdownV2(message);
+        const message = `${codeBlock}\n\nQR code not available yet\\nPlease wait a moment and try again`;
+        await ctx.reply(message, { parse_mode: 'MarkdownV2' });
       }
     } catch (error) {
-      const message = `${codeBlock}
-
-❌ Error: ${error.message}`;
-      await ctx.replyWithMarkdownV2(message);
+      const message = `${codeBlock}\n\nError: ${error.message}`;
+      await ctx.reply(message, { parse_mode: 'MarkdownV2' });
     }
   } else if (text.toUpperCase() === 'PAIR') {
-    const codeBlock = createCodeBlock('PAIR', 'Requesting Pairing Code');
+    const codeBlock = createCodeBlock();
     try {
       const phoneNumber = ctx.from.id.toString();
       const code = await session.requestPairingCode(phoneNumber);
@@ -320,7 +277,7 @@ Please wait a moment and try again`;
       
       const pairingMessage = `${codeBlock}
 
-🔢 *PAIRING CODE*
+*PAIRING CODE*
 
 Your pairing code: *${formattedCode}*
 
@@ -328,34 +285,30 @@ Your pairing code: *${formattedCode}*
 1\\. Open WhatsApp
 2\\. Go to Settings > Linked Devices
 3\\. Tap on "Link a Device"
-4\\. Enter this code: *${formattedCode}*`;
+4\\. Enter this code: *${formattedCode}*`.trim();
 
-      await ctx.replyWithMarkdownV2(pairingMessage);
+      await ctx.reply(pairingMessage, { parse_mode: 'MarkdownV2' });
     } catch (error) {
-      const message = `${codeBlock}
-
-❌ Error: ${error.message}`;
-      await ctx.replyWithMarkdownV2(message);
+      const message = `${codeBlock}\n\nError: ${error.message}`;
+      await ctx.reply(message, { parse_mode: 'MarkdownV2' });
     }
   } else if (text.toUpperCase() === 'CANCEL') {
-    const codeBlock = createCodeBlock('CANCEL', 'Cancelling Connection');
+    const codeBlock = createCodeBlock();
     await session.disconnect();
     whatsappSessions.delete(userSessions[telegramId]);
     delete userSessions[telegramId];
     saveUserSessions();
-    const message = `${codeBlock}
-
-✅ Connection process cancelled`;
-    await ctx.replyWithMarkdownV2(message);
+    const message = `${codeBlock}\n\nConnection process cancelled`;
+    await ctx.reply(message, { parse_mode: 'MarkdownV2' });
   }
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
-console.log('🤖 Starting Telegram Bot...');
+console.log('Starting Telegram Bot...');
 bot.launch().then(() => {
-  console.log('✅ Telegram Bot is running!');
+  console.log('Telegram Bot is running!');
 }).catch(error => {
-  console.error('❌ Failed to start bot:', error);
+  console.error('Failed to start bot:', error);
 });
