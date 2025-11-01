@@ -8,12 +8,13 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "npm:@majesticziee/baileys",
+    "@whiskeysockets/baileys": "github:Bealllevey62/Xatabaileys",
     "node-telegram-bot-api": "^0.64.0",
     "moment": "^2.29.4",
     "axios": "^1.6.2",
     "chalk": "^4.1.2",
-    "pino": "^8.15.0"
+    "pino": "^8.15.0",
+    "adm-zip": "^0.5.10"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
