@@ -1,6 +1,5 @@
-// Sixt.js
 module.exports = {
-    // Konfigurasi token dan setting lainnya
+   
     tokens: {},
     
     addToken: function(key, token) {
