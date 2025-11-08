@@ -1,6 +1,5 @@
-// Known-Base.js
 module.exports = {
-    // Konfigurasi database atau penyimpanan known numbers
+   
     knownNumbers: [],
     
     addKnownNumber: function(number) {
